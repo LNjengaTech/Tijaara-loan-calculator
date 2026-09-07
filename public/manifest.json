@@ -1,0 +1,23 @@
+{
+  "name": "Tijaara Microfinance Loan Calculator",
+  "short_name": "Tijaara Loans",
+  "description": "Offline-ready loan qualification calculator and schedule generator for Tijaara Microfinance",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#064e3b",
+  "theme_color": "#065f46",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
