@@ -145,7 +145,9 @@ Build a form with the following fields:
 - Net Salary (number)
 - Has Allowance Arrears? (yes/no toggle)
   - If yes: Allowance Arrears Amount (number)
-- Date of Birth (date picker) — used for the retirement rule
+- Age (number, whole years) — read directly off the payslip (e.g. 40, 35); used for the
+  retirement rule. No date picker and no date-of-birth calculation — just take the
+  age value as given.
 - Loan Type: Conventional / Sharia-compliant (toggle) — same calculation, different labels
   ("Interest Rate" vs "Profit Rate") per section 2.7
 
@@ -172,9 +174,13 @@ maxLoanAmount(T) = min(rawAmount, 3_000_000)
 
 ### 5.3 Retirement cutoff rule
 
+Age is entered directly (no date of birth, no date picker — see section 4). This means
+the calculation works in whole years, not exact months:
+
 ```
-monthsToRetirement = monthsBetween(today, dateOfBirth + retirementAge years)
-maxAllowedTerm = monthsToRetirement - 3
+yearsToRetirement  = retirementAge - age
+monthsToRetirement = yearsToRetirement * 12
+maxAllowedTerm      = monthsToRetirement - 3
 ```
 
 - Only show/allow term options `T <= maxAllowedTerm`, drawn from the fixed 13-term list
@@ -182,6 +188,10 @@ maxAllowedTerm = monthsToRetirement - 3
 - If `maxAllowedTerm < 3`, the client is ineligible for any new loan — show a clear
   message ("Client is within 3 months of retirement and cannot be issued a new loan
   per policy.").
+- Note this is a deliberate simplification: since only a whole-number age is available
+  (not an exact birth date), `monthsToRetirement` is necessarily an estimate accurate to
+  within about a year, not to the month. This is expected and does not need finer
+  precision.
 
 ### 5.4 Sharia-compliant loans
 
@@ -222,7 +232,8 @@ After the form is submitted and the client qualifies, show:
   (this involves handling personal financial data, so persistence should not be added
   without an explicit decision on storage/privacy requirements).
 - **Validation**: All numeric fields should reject negative numbers and non-numeric input.
-  Date of birth should not allow future dates or ages under working age (e.g., under 18).
+  Age should be a whole number within a sane working-age range (e.g. reject under 18 or
+  over ~100).
 - **Accessibility**: Use semantic HTML, proper label/input associations, and sufficient
   color contrast — this may be used on a variety of devices in branch settings.
 - **Currency formatting**: Use a configurable currency symbol/locale constant at the top

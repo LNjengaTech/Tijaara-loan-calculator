@@ -16,7 +16,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
   const [netSalary, setNetSalary] = useState<string>('');
   const [hasAllowanceArrears, setHasAllowanceArrears] = useState<boolean>(false);
   const [allowanceArrears, setAllowanceArrears] = useState<string>('');
-  const [dateOfBirth, setDateOfBirth] = useState<string>('');
+  const [age, setAge] = useState<string>('');
   const [loanType, setLoanType] = useState<LoanType>('conventional');
 
   // Phase 2: Buy-Off State
@@ -26,14 +26,6 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
   ]);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  // Calculate max allowable DOB (must be at least 18 years ago)
-  const today = new Date();
-  const maxDobDate = new Date(today.getFullYear() - MIN_WORKING_AGE, today.getMonth(), today.getDate());
-  const maxDobString = maxDobDate.toISOString().split('T')[0];
-  const minDobString = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate())
-    .toISOString()
-    .split('T')[0];
 
   const validate = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -63,17 +55,15 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       }
     }
 
-    if (!dateOfBirth) {
-      newErrors.dateOfBirth = 'Date of birth is required.';
-    } else {
-      const dobDate = new Date(dateOfBirth);
-      if (isNaN(dobDate.getTime())) {
-        newErrors.dateOfBirth = 'Please enter a valid date.';
-      } else if (dobDate > today) {
-        newErrors.dateOfBirth = 'Date of birth cannot be in the future.';
-      } else if (dobDate > maxDobDate) {
-        newErrors.dateOfBirth = `Client must be at least ${MIN_WORKING_AGE} years old.`;
-      }
+    const ageNum = parseFloat(age);
+    if (!age || isNaN(ageNum)) {
+      newErrors.age = 'Client age is required.';
+    } else if (!Number.isInteger(Number(age))) {
+      newErrors.age = 'Client age must be a whole number of years.';
+    } else if (ageNum < MIN_WORKING_AGE) {
+      newErrors.age = `Client must be at least ${MIN_WORKING_AGE} years old.`;
+    } else if (ageNum > 100) {
+      newErrors.age = 'Please enter a valid working age (maximum 100).';
     }
 
     // Phase 2: Credit facilities validation
@@ -105,7 +95,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       netSalary: parseFloat(netSalary),
       hasAllowanceArrears,
       allowanceArrears: hasAllowanceArrears ? parseFloat(allowanceArrears) : 0,
-      dateOfBirth,
+      age: parseInt(age, 10),
       loanType,
       hasCreditFacility,
       creditFacilities: hasCreditFacility ? creditFacilities : [],
@@ -117,7 +107,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
     setNetSalary('');
     setHasAllowanceArrears(false);
     setAllowanceArrears('');
-    setDateOfBirth('');
+    setAge('');
     setLoanType('conventional');
     setHasCreditFacility(false);
     setCreditFacilities([{ id: '1', lenderName: '', outstandingBalance: 0, monthlyInstallment: 0 }]);
@@ -133,7 +123,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setNetSalary('38000');
       setHasAllowanceArrears(false);
       setAllowanceArrears('');
-      setDateOfBirth('1988-05-14');
+      setAge('38');
       setLoanType('conventional');
       setHasCreditFacility(false);
     } else if (preset === 'arrears') {
@@ -141,17 +131,16 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setNetSalary('42000');
       setHasAllowanceArrears(true);
       setAllowanceArrears('8000');
-      setDateOfBirth('1985-11-20');
+      setAge('41');
       setLoanType('conventional');
       setHasCreditFacility(false);
     } else if (preset === 'nearRetirement') {
       // 58 years old
-      const nearYear = today.getFullYear() - 58;
       setBasicSalary('50000');
       setNetSalary('45000');
       setHasAllowanceArrears(false);
       setAllowanceArrears('');
-      setDateOfBirth(`${nearYear}-08-10`);
+      setAge('58');
       setLoanType('conventional');
       setHasCreditFacility(false);
     } else if (preset === 'sharia') {
@@ -159,7 +148,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setNetSalary('48000');
       setHasAllowanceArrears(false);
       setAllowanceArrears('');
-      setDateOfBirth('1992-03-25');
+      setAge('34');
       setLoanType('sharia');
       setHasCreditFacility(false);
     } else if (preset === 'buyOff') {
@@ -167,7 +156,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setNetSalary('38000');
       setHasAllowanceArrears(false);
       setAllowanceArrears('');
-      setDateOfBirth('1988-05-14');
+      setAge('38');
       setLoanType('conventional');
       setHasCreditFacility(true);
       setCreditFacilities([
@@ -501,34 +490,36 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
           )}
         </div>
 
-        {/* Date of Birth / Retirement Rule */}
+        {/* Client Age / Retirement Rule */}
         <div>
-          <label htmlFor="dateOfBirth" className="block text-sm font-semibold text-slate-800 mb-1">
-            Client Date of Birth <span className="text-red-500">*</span>
+          <label htmlFor="age" className="block text-sm font-semibold text-slate-800 mb-1">
+            Client Age (Years) <span className="text-red-500">*</span>
           </label>
-          <div className="max-w-sm">
+          <div className="relative max-w-sm">
             <input
-              id="dateOfBirth"
-              type="date"
-              max={maxDobString}
-              min={minDobString}
-              value={dateOfBirth}
+              id="age"
+              type="number"
+              step="1"
+              min={MIN_WORKING_AGE}
+              max="100"
+              placeholder="e.g. 40"
+              value={age}
               onChange={(e) => {
-                setDateOfBirth(e.target.value);
-                if (errors.dateOfBirth) setErrors({ ...errors, dateOfBirth: '' });
+                setAge(e.target.value);
+                if (errors.age) setErrors({ ...errors, age: '' });
               }}
               className={`w-full px-3 py-2.5 rounded-lg border bg-white text-slate-900 font-medium focus:outline-none focus:ring-2 transition text-sm ${
-                errors.dateOfBirth
+                errors.age
                   ? 'border-red-400 focus:ring-red-200 focus:border-red-500'
                   : 'border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600'
               }`}
             />
           </div>
-          {errors.dateOfBirth ? (
-            <p className="text-xs text-red-600 mt-1 font-medium">{errors.dateOfBirth}</p>
+          {errors.age ? (
+            <p className="text-xs text-red-600 mt-1 font-medium">{errors.age}</p>
           ) : (
             <p className="text-xs text-slate-500 mt-1">
-              Enforces the 60-year retirement cutoff rule (max term = months to retirement - 3)
+              Read directly off payslip (e.g. 35, 40). Enforces the 60-year retirement cutoff rule.
             </p>
           )}
         </div>

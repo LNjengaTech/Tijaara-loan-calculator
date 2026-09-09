@@ -141,8 +141,6 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
   });
 
   describe('Full Evaluation Flow', () => {
-    const asOfDate = new Date('2026-09-07');
-
     test('qualifying case: client qualifies for buy-off with spec values', () => {
       const result = evaluateBuyOffQualification(
         {
@@ -150,7 +148,7 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
           netSalary: 25000,
           hasAllowanceArrears: false,
           allowanceArrears: 0,
-          dateOfBirth: '1985-05-15', // Age ~41, ample months to retirement
+          age: 41, // Ample months to retirement
           loanType: 'conventional',
           hasCreditFacility: true,
           creditFacilities: [
@@ -161,8 +159,7 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
               monthlyInstallment: 1687,
             },
           ],
-        },
-        asOfDate
+        }
       );
 
       expect(result.qualified).toBe(true);
@@ -183,7 +180,7 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
           netSalary: 1000, // Very low net
           hasAllowanceArrears: false,
           allowanceArrears: 0,
-          dateOfBirth: '1985-05-15',
+          age: 41,
           loanType: 'conventional',
           hasCreditFacility: true,
           creditFacilities: [
@@ -194,8 +191,7 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
               monthlyInstallment: 500, // buyOffAbility = 500 (since firstAbility is negative)
             },
           ],
-        },
-        asOfDate
+        }
       );
 
       expect(result.qualified).toBe(false);
@@ -211,7 +207,7 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
           netSalary: 25000,
           hasAllowanceArrears: false,
           allowanceArrears: 0,
-          dateOfBirth: '1966-11-01', // Turns 60 in ~2 months
+          age: 60, // At retirement age
           loanType: 'conventional',
           hasCreditFacility: true,
           creditFacilities: [
@@ -222,8 +218,7 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
               monthlyInstallment: 2000,
             },
           ],
-        },
-        asOfDate
+        }
       );
 
       expect(result.qualified).toBe(false);
@@ -238,12 +233,11 @@ describe('Tijaara Phase 2: Buy-Off Calculations', () => {
           netSalary: 25000,
           hasAllowanceArrears: false,
           allowanceArrears: 0,
-          dateOfBirth: '1985-05-15',
+          age: 41,
           loanType: 'conventional',
           hasCreditFacility: true,
           creditFacilities: [],
-        },
-        asOfDate
+        }
       );
 
       expect(result.qualified).toBe(false);

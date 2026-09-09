@@ -26,7 +26,8 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
     maxAvailableLoan,
     monthsToRetirement,
     maxAllowedTerm,
-    retirementDate,
+    age,
+    yearsToRetirement,
   } = result;
 
   const isSharia = loanType === 'sharia';
@@ -158,8 +159,8 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
               </div>
             )}
             <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-              <p className="text-slate-500">Retirement Cutoff</p>
-              <p className="font-bold text-slate-900">Max {maxAllowedTerm} mos</p>
+              <p className="text-slate-500">Client Age / Cutoff</p>
+              <p className="font-bold text-slate-900">{age} yrs (Max {maxAllowedTerm} mos)</p>
             </div>
           </div>
         </div>

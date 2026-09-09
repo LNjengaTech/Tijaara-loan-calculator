@@ -26,6 +26,8 @@ export default function BuyOffRejectionNotice({
     buyOffAbility,
     rejectionReason,
     rejectionType,
+    age,
+    yearsToRetirement,
     monthsToRetirement,
     maxAllowedTerm,
   } = result;
@@ -151,7 +153,13 @@ export default function BuyOffRejectionNotice({
         <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-1 text-xs text-slate-600">
           <p className="font-semibold text-slate-800">Retirement Rule Details:</p>
           <p>
-            • Remaining Months to Retirement: <span className="font-semibold text-slate-800">{monthsToRetirement} months</span>
+            • Client Age: <span className="font-semibold text-slate-800">{age} years</span>
+          </p>
+          <p>
+            • Remaining Years to Retirement (Age 60): <span className="font-semibold text-slate-800">{yearsToRetirement} years</span>
+          </p>
+          <p>
+            • Estimated Months to Retirement: <span className="font-semibold text-slate-800">{monthsToRetirement} months</span>
           </p>
           <p>
             • Maximum Permitted Term (Months - 3): <span className="font-semibold text-slate-800">{maxAllowedTerm} months</span>

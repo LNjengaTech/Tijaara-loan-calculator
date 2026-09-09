@@ -16,7 +16,8 @@ export interface PayslipInput {
   netSalary: number;
   hasAllowanceArrears: boolean;
   allowanceArrears: number;
-  dateOfBirth: string; // YYYY-MM-DD
+  age: number; // Whole years read directly from payslip (e.g. 40, 35)
+  dateOfBirth?: string; // Optional legacy field
   loanType: LoanType;
   hasCreditFacility?: boolean;
   creditFacilities?: CreditFacility[];
@@ -51,9 +52,11 @@ export interface QualificationResult {
   allowanceArrears: number;
   basicSalary: number;
   netSalary: number;
-  dob: string;
+  age: number;
+  dob?: string;
   loanType: LoanType;
-  retirementDate: string;
+  yearsToRetirement: number;
+  retirementDate?: string;
   monthsToRetirement: number;
   maxAllowedTerm: number;
   rejectionReason?: string;
@@ -75,9 +78,11 @@ export interface BuyOffQualificationResult {
   netSalary: number;
   hadArrears: boolean;
   allowanceArrears: number;
-  dob: string;
+  age: number;
+  dob?: string;
   loanType: LoanType;
-  retirementDate: string;
+  yearsToRetirement: number;
+  retirementDate?: string;
   monthsToRetirement: number;
   maxAllowedTerm: number;
   facilities: CreditFacilityResult[];

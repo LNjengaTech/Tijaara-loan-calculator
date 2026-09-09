@@ -27,9 +27,9 @@ export default function PrintableSummary({ result, buyOffResult }: PrintableSumm
       basicSalary,
       hadArrears,
       allowanceArrears,
-      dob,
+      age,
       loanType,
-      retirementDate,
+      yearsToRetirement,
       monthsToRetirement,
       maxAllowedTerm,
       facilities,
@@ -71,12 +71,12 @@ export default function PrintableSummary({ result, buyOffResult }: PrintableSumm
             </h2>
             <div className="space-y-1">
               <div className="flex justify-between">
-                <span className="text-slate-600">Date of Birth:</span>
-                <span className="font-medium text-slate-900">{dob}</span>
+                <span className="text-slate-600">Client Age:</span>
+                <span className="font-medium text-slate-900">{age} years</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Retirement Date (Age 60):</span>
-                <span className="font-medium text-slate-900">{retirementDate}</span>
+                <span className="text-slate-600">Years to Retirement (Age 60):</span>
+                <span className="font-medium text-slate-900">{yearsToRetirement} years</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-600">Months to Retirement:</span>
@@ -277,9 +277,9 @@ export default function PrintableSummary({ result, buyOffResult }: PrintableSumm
     basicSalary,
     hadArrears,
     allowanceArrears,
-    dob,
+    age,
     loanType,
-    retirementDate,
+    yearsToRetirement,
     monthsToRetirement,
     maxAllowedTerm,
     viableTerms,
@@ -317,12 +317,12 @@ export default function PrintableSummary({ result, buyOffResult }: PrintableSumm
           </h2>
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="text-slate-600">Date of Birth:</span>
-              <span className="font-medium text-slate-900">{dob}</span>
+              <span className="text-slate-600">Client Age:</span>
+              <span className="font-medium text-slate-900">{age} years</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">Retirement Date (Age 60):</span>
-              <span className="font-medium text-slate-900">{retirementDate}</span>
+              <span className="text-slate-600">Years to Retirement (Age 60):</span>
+              <span className="font-medium text-slate-900">{yearsToRetirement} years</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Months to Retirement:</span>

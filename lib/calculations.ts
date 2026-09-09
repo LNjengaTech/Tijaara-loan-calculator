@@ -72,37 +72,37 @@ export function calculateAbility(
 }
 
 /**
- * Computes retirement dates and cutoff term:
- * monthsToRetirement = monthsBetween(today, dateOfBirth + retirementAge years)
- * maxAllowedTerm = monthsToRetirement - 3
+ * Computes retirement cutoff from client age in whole years:
+ * yearsToRetirement  = retirementAge - age
+ * monthsToRetirement = yearsToRetirement * 12
+ * maxAllowedTerm     = monthsToRetirement - 3
+ *
+ * Deliberate simplification per Section 5.3: Age is entered directly in whole years
+ * (no date picker or date-of-birth calculation).
  *
  * // CONFIRM WITH TIJAARA: Retirement age defaults to 60.
  */
 export function calculateRetirementCutoff(
-  dobString: string,
-  asOfDate: Date = new Date(),
+  age: number,
   retirementAge: number = RETIREMENT_AGE // CONFIRM WITH TIJAARA
 ): {
-  retirementDate: Date;
+  yearsToRetirement: number;
   monthsToRetirement: number;
   maxAllowedTerm: number;
   isWithin3Months: boolean;
-  ageYears: number;
+  age: number;
 } {
-  const [year, month, day] = dobString.split('-').map(Number);
-  const dob = new Date(year, month - 1, day);
-  const retirementDate = new Date(year + retirementAge, month - 1, day);
-
-  const monthsToRetirement = calculateMonthsBetween(asOfDate, retirementDate);
+  const safeAge = Math.floor(age);
+  const yearsToRetirement = retirementAge - safeAge;
+  const monthsToRetirement = yearsToRetirement * 12;
   const maxAllowedTerm = monthsToRetirement - 3;
-  const ageYears = calculateMonthsBetween(dob, asOfDate) / 12;
 
   return {
-    retirementDate,
+    yearsToRetirement,
     monthsToRetirement,
     maxAllowedTerm,
     isWithin3Months: maxAllowedTerm < 3,
-    ageYears,
+    age: safeAge,
   };
 }
 
@@ -190,11 +190,17 @@ function calculateTermResult(
  * Evaluates loan qualification for all 13 terms and business rules.
  */
 export function evaluateLoanQualification(
-  input: PayslipInput,
-  asOfDate: Date = new Date()
+  input: PayslipInput
 ): QualificationResult {
-  const { basicSalary, netSalary, hasAllowanceArrears, allowanceArrears, dateOfBirth, loanType } =
-    input;
+  const { basicSalary, netSalary, hasAllowanceArrears, allowanceArrears, loanType } = input;
+
+  // Age in whole years (fallback to DOB if provided)
+  const clientAge =
+    input.age !== undefined
+      ? input.age
+      : input.dateOfBirth
+      ? Math.max(0, Math.floor((new Date().getTime() - new Date(input.dateOfBirth).getTime()) / (365.25 * 24 * 3600 * 1000)))
+      : 0;
 
   // Compute ability
   const { ability, newNetSalary } = calculateAbility(
@@ -204,11 +210,9 @@ export function evaluateLoanQualification(
     allowanceArrears
   );
 
-  // Retirement cutoff evaluation
-  const { retirementDate, monthsToRetirement, maxAllowedTerm, isWithin3Months, ageYears } =
-    calculateRetirementCutoff(dateOfBirth, asOfDate);
-
-  const formattedRetirementDate = retirementDate.toISOString().split('T')[0];
+  // Retirement cutoff evaluation per Section 5.3
+  const { yearsToRetirement, monthsToRetirement, maxAllowedTerm, isWithin3Months } =
+    calculateRetirementCutoff(clientAge);
 
   const baseResult = {
     ability,
@@ -217,20 +221,32 @@ export function evaluateLoanQualification(
     allowanceArrears: hasAllowanceArrears ? allowanceArrears : 0,
     basicSalary,
     netSalary,
-    dob: dateOfBirth,
+    age: clientAge,
+    dob: input.dateOfBirth,
     loanType,
-    retirementDate: formattedRetirementDate,
+    yearsToRetirement,
     monthsToRetirement,
     maxAllowedTerm,
   };
 
-  // 1. Age validation: must be at least working age (18)
-  if (ageYears < MIN_WORKING_AGE) {
+  // 1. Age validation: must be whole number in sane working range [18, 100]
+  if (clientAge < MIN_WORKING_AGE) {
     return {
       ...baseResult,
       qualified: false,
       rejectionType: 'INVALID_INPUT',
       rejectionReason: `Client age must be at least ${MIN_WORKING_AGE} years old.`,
+      viableTerms: [],
+      disallowedTerms: [],
+    };
+  }
+
+  if (clientAge > 100) {
+    return {
+      ...baseResult,
+      qualified: false,
+      rejectionType: 'INVALID_INPUT',
+      rejectionReason: 'Please enter a valid client age (maximum 100).',
       viableTerms: [],
       disallowedTerms: [],
     };

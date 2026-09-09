@@ -177,18 +177,24 @@ export function calculateBuyOffTermResult(
  * Step 4 full evaluation: Evaluates Buy-Off Loan Qualification across all 13 terms.
  */
 export function evaluateBuyOffQualification(
-  input: PayslipInput,
-  asOfDate: Date = new Date()
+  input: PayslipInput
 ): BuyOffQualificationResult {
   const {
     basicSalary,
     netSalary,
     hasAllowanceArrears,
     allowanceArrears,
-    dateOfBirth,
     loanType,
     creditFacilities = [],
   } = input;
+
+  // Age in whole years (fallback to DOB if provided)
+  const clientAge =
+    input.age !== undefined
+      ? input.age
+      : input.dateOfBirth
+      ? Math.max(0, Math.floor((new Date().getTime() - new Date(input.dateOfBirth).getTime()) / (365.25 * 24 * 3600 * 1000)))
+      : 0;
 
   // 1. First ability (can be negative)
   const { firstAbility, newNetSalary } = calculateFirstAbility(
@@ -206,10 +212,8 @@ export function evaluateBuyOffQualification(
   const buyOffAbility = calculateBuyOffAbility(firstAbility, totalInstallments);
 
   // 4. Retirement Cutoff Rule (same as Phase 1)
-  const { retirementDate, monthsToRetirement, maxAllowedTerm, isWithin3Months, ageYears } =
-    calculateRetirementCutoff(dateOfBirth, asOfDate);
-
-  const formattedRetirementDate = retirementDate.toISOString().split('T')[0];
+  const { yearsToRetirement, monthsToRetirement, maxAllowedTerm, isWithin3Months } =
+    calculateRetirementCutoff(clientAge);
 
   const baseResult = {
     firstAbility,
@@ -218,9 +222,10 @@ export function evaluateBuyOffQualification(
     netSalary,
     hadArrears: hasAllowanceArrears,
     allowanceArrears: hasAllowanceArrears ? allowanceArrears : 0,
-    dob: dateOfBirth,
+    age: clientAge,
+    dob: input.dateOfBirth,
     loanType,
-    retirementDate: formattedRetirementDate,
+    yearsToRetirement,
     monthsToRetirement,
     maxAllowedTerm,
     facilities: facilityResults,
@@ -230,12 +235,23 @@ export function evaluateBuyOffQualification(
   };
 
   // Age validation
-  if (ageYears < MIN_WORKING_AGE) {
+  if (clientAge < MIN_WORKING_AGE) {
     return {
       ...baseResult,
       qualified: false,
       rejectionType: 'INVALID_INPUT',
       rejectionReason: `Client age must be at least ${MIN_WORKING_AGE} years old.`,
+      qualifyingTerms: [],
+      disqualifiedTerms: [],
+    };
+  }
+
+  if (clientAge > 100) {
+    return {
+      ...baseResult,
+      qualified: false,
+      rejectionType: 'INVALID_INPUT',
+      rejectionReason: 'Please enter a valid client age (maximum 100).',
       qualifyingTerms: [],
       disqualifiedTerms: [],
     };

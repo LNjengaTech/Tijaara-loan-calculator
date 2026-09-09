@@ -19,9 +19,10 @@ export default function RejectionNotice({ result, onEdit }: RejectionNoticeProps
     allowanceArrears,
     rejectionReason,
     rejectionType,
+    age,
+    yearsToRetirement,
     monthsToRetirement,
     maxAllowedTerm,
-    retirementDate,
   } = result;
 
   const formatMoney = (val: number) =>
@@ -113,10 +114,13 @@ export default function RejectionNotice({ result, onEdit }: RejectionNoticeProps
         <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-1 text-xs text-slate-600">
           <p className="font-semibold text-slate-800">Retirement Rule Details:</p>
           <p>
-            • Projected Retirement Date: <span className="font-semibold text-slate-800">{retirementDate}</span>
+            • Client Age: <span className="font-semibold text-slate-800">{age} years</span>
           </p>
           <p>
-            • Remaining Months to Retirement: <span className="font-semibold text-slate-800">{monthsToRetirement} months</span>
+            • Remaining Years to Retirement (Age 60): <span className="font-semibold text-slate-800">{yearsToRetirement} years</span>
+          </p>
+          <p>
+            • Estimated Months to Retirement: <span className="font-semibold text-slate-800">{monthsToRetirement} months</span>
           </p>
           <p>
             • Maximum Permitted Term (Months - 3): <span className="font-semibold text-slate-800">{maxAllowedTerm} months</span>
