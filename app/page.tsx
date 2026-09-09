@@ -5,20 +5,34 @@ import Navbar from '@/components/Navbar';
 import PayslipForm from '@/components/PayslipForm';
 import ResultsTable from '@/components/ResultsTable';
 import RejectionNotice from '@/components/RejectionNotice';
+import BuyOffResultsTable from '@/components/BuyOffResultsTable';
+import BuyOffRejectionNotice from '@/components/BuyOffRejectionNotice';
 import PrintableSummary from '@/components/PrintableSummary';
-import { PayslipInput, QualificationResult } from '@/lib/types';
+import { PayslipInput, QualificationResult, BuyOffQualificationResult } from '@/lib/types';
 import { evaluateLoanQualification } from '@/lib/calculations';
+import { evaluateBuyOffQualification } from '@/lib/buyOff';
 import { CURRENCY, MIN_ABILITY, MAX_ABILITY, RETIREMENT_AGE } from '@/lib/schedule';
 
 export default function Home() {
   const [result, setResult] = useState<QualificationResult | null>(null);
+  const [buyOffResult, setBuyOffResult] = useState<BuyOffQualificationResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleFormSubmit = (input: PayslipInput) => {
     setIsProcessing(true);
-    // Calculations are pure client-side
-    const evaluation = evaluateLoanQualification(input);
-    setResult(evaluation);
+
+    if (input.hasCreditFacility && input.creditFacilities && input.creditFacilities.length > 0) {
+      // Phase 2: Buy-Off Evaluation
+      const evaluation = evaluateBuyOffQualification(input);
+      setBuyOffResult(evaluation);
+      setResult(null);
+    } else {
+      // Phase 1: Standard Qualification Evaluation
+      const evaluation = evaluateLoanQualification(input);
+      setResult(evaluation);
+      setBuyOffResult(null);
+    }
+
     setIsProcessing(false);
 
     // Smooth scroll to results
@@ -27,11 +41,14 @@ export default function Home() {
 
   const handleReset = () => {
     setResult(null);
+    setBuyOffResult(null);
   };
 
   const handlePrint = () => {
     window.print();
   };
+
+  const hasAnyResult = result !== null || buyOffResult !== null;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100">
@@ -41,7 +58,7 @@ export default function Home() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
         {/* Top Info Header when no result is active */}
-        {!result && (
+        {!hasAnyResult && (
           <div className="mb-8">
             <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -50,31 +67,44 @@ export default function Home() {
                     Loan Qualification & Term Schedule
                   </h2>
                   <p className="text-sm text-slate-600 mt-1 max-w-2xl">
-                    Evaluates monthly repayment capacity (Ability) from client payslips, automatically enforces the {RETIREMENT_AGE}-year retirement cutoff rule, and computes exact continuous loan amounts across the 13 approved terms.
+                    Evaluates monthly repayment capacity (Ability) from client payslips, supports commercial debt Buy-Off consolidation, enforces the {RETIREMENT_AGE}-year retirement cutoff rule, and computes exact continuous loan amounts across the 13 approved terms.
                   </p>
                 </div>
-                <div className="flex items-center gap-2 self-start sm:self-auto">
+                <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Formula-Driven Schedule
+                  </span>
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                    Phase 2: Buy-Off Enabled
                   </span>
                 </div>
               </div>
 
               {/* Quick Policy Highlights */}
-              <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
+              <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs text-slate-600">
                 <div className="flex items-start gap-2">
                   <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                     1
                   </div>
                   <div>
                     <span className="font-bold text-slate-800">Repayment Capacity:</span>{' '}
-                    Ability must be between {CURRENCY} {MIN_ABILITY} and {CURRENCY} {MAX_ABILITY.toLocaleString()}.
+                    Standard ability must be between {CURRENCY} {MIN_ABILITY} and {CURRENCY} {MAX_ABILITY.toLocaleString()}.
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
                   <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                     2
+                  </div>
+                  <div>
+                    <span className="font-bold text-slate-800">Buy-Off Loans:</span>{' '}
+                    Settles external commercial credit facilities using specialized Buy-Off Ability.
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                    3
                   </div>
                   <div>
                     <span className="font-bold text-slate-800">Retirement Rule:</span>{' '}
@@ -84,7 +114,7 @@ export default function Home() {
 
                 <div className="flex items-start gap-2">
                   <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                    3
+                    4
                   </div>
                   <div>
                     <span className="font-bold text-slate-800">Sharia / Conventional:</span>{' '}
@@ -97,7 +127,7 @@ export default function Home() {
         )}
 
         {/* Dynamic Display based on evaluation state */}
-        {!result && (
+        {!hasAnyResult && (
           <PayslipForm
             onSubmit={handleFormSubmit}
             onReset={handleReset}
@@ -105,6 +135,25 @@ export default function Home() {
           />
         )}
 
+        {/* Phase 2: Buy-Off Results Display */}
+        {buyOffResult && !buyOffResult.qualified && (
+          <div className="space-y-6">
+            <BuyOffRejectionNotice result={buyOffResult} onEdit={handleReset} />
+          </div>
+        )}
+
+        {buyOffResult && buyOffResult.qualified && (
+          <div className="space-y-6">
+            <BuyOffResultsTable
+              result={buyOffResult}
+              onEdit={handleReset}
+              onPrint={handlePrint}
+            />
+            <PrintableSummary buyOffResult={buyOffResult} />
+          </div>
+        )}
+
+        {/* Phase 1: Standard Results Display */}
         {result && !result.qualified && (
           <div className="space-y-6">
             <RejectionNotice result={result} onEdit={handleReset} />
@@ -118,7 +167,6 @@ export default function Home() {
               onEdit={handleReset}
               onPrint={handlePrint}
             />
-            {/* Printable summary visible only when printing */}
             <PrintableSummary result={result} />
           </div>
         )}
@@ -131,7 +179,7 @@ export default function Home() {
             Tijaara Microfinance Ltd — Credit Operations & Branch Tool
           </p>
           <p className="mt-1">
-            Authoritative 13-Term Schedule Formula Engine • Fully Offline Capable Progressive Web App (PWA)
+            Authoritative 13-Term Schedule Formula Engine • Standard & Buy-Off Loans • Offline Capable PWA
           </p>
         </div>
       </footer>

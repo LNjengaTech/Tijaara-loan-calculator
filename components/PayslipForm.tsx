@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PayslipInput, LoanType } from '@/lib/types';
+import { PayslipInput, LoanType, CreditFacility } from '@/lib/types';
 import { CURRENCY, MIN_WORKING_AGE } from '@/lib/schedule';
+import BuyOffForm from '@/components/BuyOffForm';
 
 interface PayslipFormProps {
   onSubmit: (input: PayslipInput) => void;
@@ -17,6 +18,12 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
   const [allowanceArrears, setAllowanceArrears] = useState<string>('');
   const [dateOfBirth, setDateOfBirth] = useState<string>('');
   const [loanType, setLoanType] = useState<LoanType>('conventional');
+
+  // Phase 2: Buy-Off State
+  const [hasCreditFacility, setHasCreditFacility] = useState<boolean>(false);
+  const [creditFacilities, setCreditFacilities] = useState<CreditFacility[]>([
+    { id: '1', lenderName: '', outstandingBalance: 0, monthlyInstallment: 0 },
+  ]);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -69,6 +76,22 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       }
     }
 
+    // Phase 2: Credit facilities validation
+    if (hasCreditFacility) {
+      if (creditFacilities.length === 0) {
+        newErrors.creditFacilities = 'Please add at least one credit facility.';
+      } else {
+        creditFacilities.forEach((fac, idx) => {
+          if (!fac.outstandingBalance || fac.outstandingBalance <= 0) {
+            newErrors[`facility_${fac.id}_balance`] = `Facility #${idx + 1}: Balance must be > 0.`;
+          }
+          if (!fac.monthlyInstallment || fac.monthlyInstallment <= 0) {
+            newErrors[`facility_${fac.id}_installment`] = `Facility #${idx + 1}: Installment must be > 0.`;
+          }
+        });
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -84,6 +107,8 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       allowanceArrears: hasAllowanceArrears ? parseFloat(allowanceArrears) : 0,
       dateOfBirth,
       loanType,
+      hasCreditFacility,
+      creditFacilities: hasCreditFacility ? creditFacilities : [],
     });
   };
 
@@ -94,12 +119,14 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
     setAllowanceArrears('');
     setDateOfBirth('');
     setLoanType('conventional');
+    setHasCreditFacility(false);
+    setCreditFacilities([{ id: '1', lenderName: '', outstandingBalance: 0, monthlyInstallment: 0 }]);
     setErrors({});
     onReset();
   };
 
   // Preset loader for quick branch testing
-  const loadPreset = (preset: 'standard' | 'arrears' | 'nearRetirement' | 'sharia') => {
+  const loadPreset = (preset: 'standard' | 'arrears' | 'nearRetirement' | 'sharia' | 'buyOff') => {
     setErrors({});
     if (preset === 'standard') {
       setBasicSalary('45000');
@@ -108,6 +135,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setAllowanceArrears('');
       setDateOfBirth('1988-05-14');
       setLoanType('conventional');
+      setHasCreditFacility(false);
     } else if (preset === 'arrears') {
       setBasicSalary('60000');
       setNetSalary('42000');
@@ -115,6 +143,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setAllowanceArrears('8000');
       setDateOfBirth('1985-11-20');
       setLoanType('conventional');
+      setHasCreditFacility(false);
     } else if (preset === 'nearRetirement') {
       // 58 years old
       const nearYear = today.getFullYear() - 58;
@@ -124,6 +153,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setAllowanceArrears('');
       setDateOfBirth(`${nearYear}-08-10`);
       setLoanType('conventional');
+      setHasCreditFacility(false);
     } else if (preset === 'sharia') {
       setBasicSalary('55000');
       setNetSalary('48000');
@@ -131,6 +161,23 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
       setAllowanceArrears('');
       setDateOfBirth('1992-03-25');
       setLoanType('sharia');
+      setHasCreditFacility(false);
+    } else if (preset === 'buyOff') {
+      setBasicSalary('45000');
+      setNetSalary('38000');
+      setHasAllowanceArrears(false);
+      setAllowanceArrears('');
+      setDateOfBirth('1988-05-14');
+      setLoanType('conventional');
+      setHasCreditFacility(true);
+      setCreditFacilities([
+        {
+          id: '1',
+          lenderName: 'Platinum Credit',
+          outstandingBalance: 200753,
+          monthlyInstallment: 1687,
+        },
+      ]);
     }
   };
 
@@ -190,6 +237,13 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
             className="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 rounded transition"
           >
             Sharia
+          </button>
+          <button
+            type="button"
+            onClick={() => loadPreset('buyOff')}
+            className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold px-2 py-1 rounded transition"
+          >
+            Buy-Off Sample
           </button>
         </div>
       </div>
@@ -400,6 +454,53 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
           )}
         </div>
 
+        {/* Phase 2: Buy-Off Credit Facilities Section */}
+        <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">
+                Does the client have a credit facility to buy off?
+              </p>
+              <p className="text-xs text-slate-500">
+                Settle client's existing commercial debts with a new Tijaara loan
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={hasCreditFacility}
+                onClick={() => setHasCreditFacility(!hasCreditFacility)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 ${
+                  hasCreditFacility ? 'bg-emerald-700' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    hasCreditFacility ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+              <span className="text-xs font-semibold text-slate-700 w-8">
+                {hasCreditFacility ? 'Yes' : 'No'}
+              </span>
+            </div>
+          </div>
+
+          {hasCreditFacility && (
+            <div className="pt-2 border-t border-slate-200">
+              <BuyOffForm
+                facilities={creditFacilities}
+                onChange={setCreditFacilities}
+                errors={errors}
+              />
+              {errors.creditFacilities && (
+                <p className="text-xs text-red-600 mt-2 font-medium">{errors.creditFacilities}</p>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Date of Birth / Retirement Rule */}
         <div>
           <label htmlFor="dateOfBirth" className="block text-sm font-semibold text-slate-800 mb-1">
@@ -437,14 +538,14 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
           <button
             type="button"
             onClick={handleReset}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-100 transition text-sm text-center"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-100 transition text-sm text-center cursor-pointer"
           >
             Clear / Reset
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold shadow-sm transition flex items-center justify-center gap-2 text-sm"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold shadow-sm transition flex items-center justify-center gap-2 text-sm cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -459,7 +560,9 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
                 d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
               />
             </svg>
-            Compute Qualification & Schedule
+            {hasCreditFacility
+              ? 'Compute Buy-Off Qualification & Schedule'
+              : 'Compute Qualification & Schedule'}
           </button>
         </div>
       </form>
