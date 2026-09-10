@@ -109,7 +109,7 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
                   Ability
                 </span>
                 <p className="text-2xl sm:text-4xl font-black mt-2 tracking-tight text-white">
-                  {formatRounded(maxAvailableLoan.installment)}
+                  {CURRENCY} {formatMoney(ability)}
                 </p>
               </div>
               <div>
@@ -243,7 +243,7 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
                     {CURRENCY} {formatRounded(t.maxLoanAmount)}
                   </td>
                   <td className="py-3.5 px-4 text-right font-semibold text-slate-900 whitespace-nowrap">
-                    {CURRENCY} {formatRounded(t.monthlyRepayment)}
+                    {CURRENCY} {formatMoney(ability)}
                   </td>
                   <td className="py-3.5 px-4 text-center whitespace-nowrap">
                     <span className="inline-block px-2 py-0.5 text-xs font-semibold rounded bg-emerald-100 text-emerald-800">
