@@ -192,54 +192,57 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
             Payslip Salary Details
           </h2>
           <p className="text-xs text-slate-500">
-            Enter verified figures from client's latest payslip
+            Enter verified figures from client&apos;s latest payslip
           </p>
         </div>
 
         {/* Quick Presets for Loan Officer testing */}
+        <div className="block">
+          <span className="text-xs text-slate-400 font-medium mr-1">Payslip Sample Presets/samples:</span>
+          </div>
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs text-slate-400 font-medium mr-1">Sample Presets:</span>
+          
           <button
             type="button"
             onClick={() => loadPreset('standard')}
-            className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded transition"
+            className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 font-semibold rounded transition border"
           >
             Standard
           </button>
           <button
             type="button"
             onClick={() => loadPreset('arrears')}
-            className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded transition"
+            className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 font-semibold rounded transition border"
           >
             With Arrears
           </button>
           <button
             type="button"
             onClick={() => loadPreset('nearRetirement')}
-            className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 px-2 py-1 rounded transition"
+            className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 font-semibold rounded transition border"
           >
             Age 58 (Cutoff)
           </button>
-          <button
+          {/* <button
             type="button"
             onClick={() => loadPreset('sharia')}
-            className="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 rounded transition"
+            className="text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2 py-1 font-semibold rounded transition border"
           >
             Sharia
-          </button>
+          </button> */}
           <button
             type="button"
             onClick={() => loadPreset('buyOff')}
-            className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold px-2 py-1 rounded transition"
+            className="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 font-semibold rounded transition border"
           >
-            Buy-Off Sample
+            Buy-Off
           </button>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Loan Type Selector */}
-        <div>
+        {/* <div>
           <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
             Loan Product Type
           </label>
@@ -263,7 +266,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
                 {loanType === 'conventional' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">Conventional Loan</p>
+                <p className="text-sm font-semibold text-slate-900">Conventional Credit Facility</p>
                 <p className="text-xs text-slate-500">Standard interest rate & ledger fee schedule</p>
               </div>
             </button>
@@ -292,7 +295,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
               </div>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Salary Inputs Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -375,10 +378,8 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
         <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-slate-800">Has Allowance Arrears?</p>
-              <p className="text-xs text-slate-500">
-                Check if any allowance arrears are currently owed on the payslip
-              </p>
+              <p className="text-sm font-semibold text-slate-800">Has Arrears?</p>
+              
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -408,7 +409,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
                 htmlFor="allowanceArrears"
                 className="block text-sm font-semibold text-slate-800 mb-1"
               >
-                Allowance Arrears Amount ({CURRENCY}) <span className="text-red-500">*</span>
+                Arrears Amount ({CURRENCY}) <span className="text-red-500">*</span>
               </label>
               <div className="relative max-w-sm">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-medium text-sm">
@@ -448,10 +449,7 @@ export default function PayslipForm({ onSubmit, onReset, isLoading = false }: Pa
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-slate-800">
-                Does the client have a credit facility to buy off?
-              </p>
-              <p className="text-xs text-slate-500">
-                Settle client's existing commercial debts with a new Tijaara loan
+                Has Buy off?
               </p>
             </div>
             <div className="flex items-center gap-2">

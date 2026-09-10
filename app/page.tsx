@@ -11,7 +11,7 @@ import PrintableSummary from '@/components/PrintableSummary';
 import { PayslipInput, QualificationResult, BuyOffQualificationResult } from '@/lib/types';
 import { evaluateLoanQualification } from '@/lib/calculations';
 import { evaluateBuyOffQualification } from '@/lib/buyOff';
-import { CURRENCY, MIN_ABILITY, MAX_ABILITY, RETIREMENT_AGE } from '@/lib/schedule';
+// import { CURRENCY, MIN_ABILITY, MAX_ABILITY, RETIREMENT_AGE } from '@/lib/schedule';
 
 export default function Home() {
   const [result, setResult] = useState<QualificationResult | null>(null);
@@ -64,24 +64,16 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    Loan Qualification & Term Schedule
+                    Credit Qualification & Term Schedule
                   </h2>
                   <p className="text-sm text-slate-600 mt-1 max-w-2xl">
-                    Evaluates monthly repayment capacity (Ability) from client payslips, supports commercial debt Buy-Off consolidation, enforces the {RETIREMENT_AGE}-year retirement cutoff rule, and computes exact continuous loan amounts across the 13 approved terms.
+                    Evaluates monthly repayment capacity (Ability) from client payslips.
                   </p>
-                </div>
-                <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Formula-Driven Schedule
-                  </span>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                    Phase 2: Buy-Off Enabled
-                  </span>
                 </div>
               </div>
 
               {/* Quick Policy Highlights */}
-              <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs text-slate-600">
+              {/* <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs text-slate-600">
                 <div className="flex items-start gap-2">
                   <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                     1
@@ -97,7 +89,7 @@ export default function Home() {
                     2
                   </div>
                   <div>
-                    <span className="font-bold text-slate-800">Buy-Off Loans:</span>{' '}
+                    <span className="font-bold text-slate-800">Buy-Off:</span>{' '}
                     Settles external commercial credit facilities using specialized Buy-Off Ability.
                   </div>
                 </div>
@@ -118,10 +110,10 @@ export default function Home() {
                   </div>
                   <div>
                     <span className="font-bold text-slate-800">Sharia / Conventional:</span>{' '}
-                    Identical math, specialized labeling ("Profit Rate").
+                    Identical math, specialized labeling (&quot;Profit Rate&quot;).
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         )}
@@ -177,9 +169,6 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4">
           <p className="font-medium text-slate-700">
             Tijaara Microfinance Ltd — Credit Operations & Branch Tool
-          </p>
-          <p className="mt-1">
-            Authoritative 13-Term Schedule Formula Engine • Standard & Buy-Off Loans • Offline Capable PWA
           </p>
         </div>
       </footer>

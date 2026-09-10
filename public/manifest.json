@@ -1,6 +1,6 @@
 {
-  "name": "Tijaara Microfinance Loan Calculator",
-  "short_name": "Tijaara Loans",
+  "name": "Tijaara Credit Calculator",
+  "short_name": "Tijaara",
   "description": "Offline-ready loan qualification calculator and schedule generator for Tijaara Microfinance",
   "id": "/",
   "start_url": "/",

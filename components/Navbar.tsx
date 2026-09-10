@@ -1,34 +1,34 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export default function Navbar() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [isOnline, setIsOnline] = useState(true);
+  // const [isOnline, setIsOnline] = useState(true);
 
-  useEffect(() => {
-    setIsOnline(navigator.onLine);
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+  // useEffect(() => {
+  //   setIsOnline(navigator.onLine);
+  //   const handleOnline = () => setIsOnline(true);
+  //   const handleOffline = () => setIsOnline(false);
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+  //   window.addEventListener('online', handleOnline);
+  //   window.addEventListener('offline', handleOffline);
 
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setIsInstallable(true);
-    };
+  //   const handleBeforeInstallPrompt = (e: Event) => {
+  //     e.preventDefault();
+  //     setDeferredPrompt(e);
+  //     setIsInstallable(true);
+  //   };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  //   window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('online', handleOnline);
+  //     window.removeEventListener('offline', handleOffline);
+  //     window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  //   };
+  // }, []);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -57,7 +57,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           {/* Online/Offline status pill */}
-          <span
+          {/* <span
             className={`text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 font-medium ${
               isOnline
                 ? 'bg-emerald-900/60 text-emerald-200 border border-emerald-700'
@@ -70,7 +70,7 @@ export default function Navbar() {
               }`}
             />
             {isOnline ? 'Offline Ready' : 'Offline Mode'}
-          </span>
+          </span> */}
 
           {/* PWA Install Button */}
           {isInstallable && (

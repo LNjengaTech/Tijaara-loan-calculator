@@ -15,24 +15,24 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
 
   const {
     ability,
-    newNetSalary,
+    // newNetSalary,
     netSalary,
     basicSalary,
     hadArrears,
     allowanceArrears,
-    loanType,
+    // loanType,
     viableTerms,
     disallowedTerms,
     maxAvailableLoan,
-    monthsToRetirement,
-    maxAllowedTerm,
-    age,
-    yearsToRetirement,
+    // monthsToRetirement,
+    // maxAllowedTerm,
+    // age,
+    // yearsToRetirement,
   } = result;
 
-  const isSharia = loanType === 'sharia';
-  const rateLabel = isSharia ? 'Profit Rate' : 'Interest Rate';
-  const loanTypeTitle = isSharia ? 'Profit-Sharing / Sharia Loan' : 'Conventional Loan';
+  // const isSharia = loanType === 'sharia';
+  // const rateLabel = isSharia ? 'Profit Rate' : 'Interest Rate';
+  // const loanTypeTitle = isSharia ? 'Profit-Sharing / Sharia Loan' : 'Conventional Loan';
 
   const formatMoney = (val: number) =>
     val.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -43,12 +43,12 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+            <span className="px-2.5 py-1 rounded-sm text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
               QUALIFIED
             </span>
-            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            {/* <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
               {loanTypeTitle}
-            </span>
+            </span> */}
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-2">
             Loan Qualification & Term Schedule
@@ -91,26 +91,27 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Maximum Loan Available Highlight Card */}
         {maxAvailableLoan && (
-          <div className="bg-gradient-to-br from-emerald-800 to-emerald-950 text-white rounded-xl shadow-md p-6 flex flex-col justify-between border border-emerald-700">
+          <div className="bg-linear-to-br from-emerald-800 to-emerald-950 text-white rounded-xl shadow-md p-6 flex flex-col justify-between border border-emerald-700">
+            <div className='flex items-center justify-between'>
             <div>
               <span className="text-xs uppercase tracking-wider font-semibold text-emerald-300">
-                Maximum Eligible Loan
+                Ability
               </span>
-              <p className="text-3xl sm:text-4xl font-black mt-2 tracking-tight text-white">
-                {CURRENCY} {formatMoney(maxAvailableLoan.amount)}
+              <p className="text-2xl sm:text-4xl font-black mt-2 tracking-tight text-white">
+                {formatMoney(maxAvailableLoan.installment)}
               </p>
-              <p className="text-xs text-emerald-200 mt-1">
-                At longest viable term ({maxAvailableLoan.term} months)
+            </div>
+            <div>
+              <span className="text-xs uppercase tracking-wider font-semibold text-emerald-300">
+                Max. Credit ({maxAvailableLoan.term} mnts)
+              </span>
+              <p className="text-2xl sm:text-4xl font-black mt-2 tracking-tight text-white">
+                {formatMoney(maxAvailableLoan.amount)}
               </p>
+            </div>
             </div>
 
             <div className="mt-6 pt-4 border-t border-emerald-700/60 space-y-2 text-xs">
-              <div className="flex justify-between text-emerald-200">
-                <span>Monthly Repayment:</span>
-                <span className="font-bold text-white">
-                  {CURRENCY} {formatMoney(maxAvailableLoan.installment)}
-                </span>
-              </div>
               <div className="flex justify-between text-emerald-200">
                 <span>Max Term Allowed:</span>
                 <span className="font-bold text-white">{maxAvailableLoan.term} Months</span>
@@ -123,11 +124,8 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
-              Repayment Capacity (Ability) Breakdown
+              Ability Breakdown
             </h3>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-              Audit Transparent
-            </span>
           </div>
 
           {/* Formula Display Box */}
@@ -154,14 +152,14 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
             </div>
             {hadArrears && (
               <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-                <p className="text-slate-500">Allowance Arrears</p>
+                <p className="text-slate-500">Arrears</p>
                 <p className="font-bold text-amber-700">-{CURRENCY} {formatMoney(allowanceArrears)}</p>
               </div>
             )}
-            <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
+            {/* <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
               <p className="text-slate-500">Client Age / Cutoff</p>
               <p className="font-bold text-slate-900">{age} yrs (Max {maxAllowedTerm} mos)</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -174,7 +172,7 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
               Approved Term Options ({viableTerms.length} Viable Terms)
             </h3>
             <p className="text-xs text-slate-500">
-              Exact continuous loan amounts calculated using the branch formula (no arbitrary rounding)
+              Exact continuous amounts (no arbitrary rounding)
             </p>
           </div>
 
@@ -196,9 +194,9 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
             <thead>
               <tr className="bg-slate-100/75 border-b border-slate-200 text-xs font-bold text-slate-700 uppercase tracking-wider">
                 <th className="py-3.5 px-4">Term</th>
-                <th className="py-3.5 px-4">{rateLabel}</th>
+                {/* <th className="py-3.5 px-4">{rateLabel}</th>
                 <th className="py-3.5 px-4">Insurance (p.a.)</th>
-                <th className="py-3.5 px-4">Ledger Fee</th>
+                <th className="py-3.5 px-4">Ledger Fee</th> */}
                 <th className="py-3.5 px-4 text-right">Max Loan Amount</th>
                 <th className="py-3.5 px-4 text-right">Monthly Repayment</th>
                 <th className="py-3.5 px-4 text-center">Status</th>
@@ -217,7 +215,7 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
                       ({(t.term / 12).toFixed(t.term % 12 === 0 ? 0 : 1)} yrs)
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 whitespace-nowrap">
+                  {/* <td className="py-3.5 px-4 whitespace-nowrap">
                     {(t.interestOrProfitRate * 100).toFixed(3).replace(/\.?0+$/, '')}%
                   </td>
                   <td className="py-3.5 px-4 text-slate-600 whitespace-nowrap">
@@ -225,7 +223,7 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
                   </td>
                   <td className="py-3.5 px-4 text-slate-600 whitespace-nowrap">
                     {CURRENCY} {t.ledgerFee}
-                  </td>
+                  </td> */}
                   <td className="py-3.5 px-4 text-right font-bold text-emerald-900 text-base whitespace-nowrap">
                     {CURRENCY} {formatMoney(t.maxLoanAmount)}
                   </td>
@@ -277,14 +275,14 @@ export default function ResultsTable({ result, onEdit, onPrint }: ResultsTablePr
         </div>
 
         {/* Schedule Footer Note */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        {/* <div className="p-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <p>
             • Processing fee rate: 0.00% (placeholder). Net disbursed amount equals maximum loan principal.
           </p>
           <p>
             • Max schedule ceiling: {CURRENCY} 3,000,000. Minimum loan floor: {CURRENCY} 5,000.
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

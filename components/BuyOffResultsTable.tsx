@@ -19,7 +19,7 @@ export default function BuyOffResultsTable({
 
   const {
     firstAbility,
-    newNetSalary,
+    // newNetSalary,
     netSalary,
     basicSalary,
     hadArrears,
@@ -99,16 +99,13 @@ export default function BuyOffResultsTable({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Maximum Loan Available Highlight Card */}
         {maxAvailableLoan && (
-          <div className="bg-gradient-to-br from-emerald-800 to-emerald-950 text-white rounded-xl shadow-md p-6 flex flex-col justify-between border border-emerald-700">
+          <div className="bg-linear-to-br from-emerald-800 to-emerald-950 text-white rounded-xl shadow-md p-6 flex flex-col justify-between border border-emerald-700">
             <div>
               <span className="text-xs uppercase tracking-wider font-semibold text-emerald-300">
-                Recommended Buy-Off Loan
+                Recommended Buy-Off Loan ({maxAvailableLoan.term} months)
               </span>
               <p className="text-3xl sm:text-4xl font-black mt-2 tracking-tight text-white">
                 {CURRENCY} {formatMoney(maxAvailableLoan.amount)}
-              </p>
-              <p className="text-xs text-emerald-200 mt-1">
-                At longest qualifying term ({maxAvailableLoan.term} months)
               </p>
             </div>
 
@@ -139,11 +136,8 @@ export default function BuyOffResultsTable({
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
-              Buy-Off Ability Computation (Step-by-Step)
+              Buy-Off Ability Computation
             </h3>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-              Phase 2 Engine
-            </span>
           </div>
 
           {/* Audit Steps Box */}
